@@ -651,6 +651,21 @@ tailwind.config = {
             <div class="mt-5 pt-4 border-t border-bdr-subtle text-[12px] text-txt-muted">
               기준: 핵심 가치(분석 깊이)에 기여하는가? 5분 안에 쓸 수 있는가?
             </div>
+
+            <!-- v2: 제약이 풀린 뒤 -->
+            <div class="mt-6 pt-5 border-t border-bdr-subtle">
+              <p class="text-[11px] font-bold tracking-wider uppercase text-jj-emerald mb-4">v2 — 제약이 풀린 뒤</p>
+              <div class="space-y-3 text-[12px] text-txt-secondary leading-relaxed">
+                <div class="rounded-lg p-3 bg-jj-emerald/5 border border-jj-emerald/10">
+                  <p class="font-bold text-jj-emerald mb-1">계좌 연동</p>
+                  <p>v1에서는 증권사 OpenAPI가 사업자만 쓸 수 있어서 손도 못 댔다. v2에서 KIS(한국투자증권) OAuth를 직접 연동해서 잔고 자동 조회까지 됐다. OCR은 진입장벽 없이 시작하는 용도로 남기고, KIS는 실시간 동기화 용도로 나눴다.</p>
+                </div>
+                <div class="rounded-lg p-3 bg-surface-elevated">
+                  <p class="font-bold text-txt-primary mb-1">자동 매매</p>
+                  <p>KIS 연동하고 나니 모의투자 주문까지 돌아가긴 했다. 그런데도 실매매는 안 열었다. 이유는 처음과 같다 — 이건 "대신 해주는 도구"가 아니라 "판단을 돕는 도구"니까.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -878,6 +893,20 @@ tailwind.config = {
         </div>
       </details>
 
+    </div>
+
+    <!-- 피드백이 만든 기능: 포트폴리오 브리핑 -->
+    <div class="mt-12 rv">
+      <div class="bg-surface-card rounded-[20px] p-8 border border-bdr-card">
+        <p class="text-[11px] font-bold tracking-wider uppercase text-jj-violet mb-4">피드백이 만든 기능</p>
+        <h3 class="font-display text-xl font-bold tracking-tight mb-4">포트폴리오 브리핑</h3>
+        <div class="space-y-3 text-[14px] text-txt-secondary leading-relaxed">
+          <p>피드백을 고치면서 보니, 부모님은 앱을 "직접 분석"하지 않았다.</p>
+          <p>복잡한 화면을 단순하게 바꿔도 종목 검색 같은 능동적 행동은 안 일어났다. 그래서 열면 바로 답이 있는 구조로 바꿨다.</p>
+          <p>홈 화면 자체가 AI 모닝 브리핑이다. 열면 "오늘 당신의 포트폴리오" — 뭐가 바뀌었고, 왜 바뀌었고, 주의할 것. 며칠 안 열어도 날짜별로 흐름을 따라갈 수 있고, 분기마다 운용리포트가 나온다.</p>
+          <p class="text-txt-muted text-[13px] italic">"딸이 정리해서 알려주는 것 같다"가 목표한 경험이다.</p>
+        </div>
+      </div>
     </div>
 
     <!-- 피드백 사이클 요약 -->
@@ -1119,12 +1148,41 @@ tailwind.config = {
 <!-- ═══════ 08. CURRENT STATE ═══════ -->
 <section class="py-20" style="background:var(--s-darker);">
   <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
-    <div class="max-w-3xl mx-auto text-center rv">
-      <p class="label mb-6">현재 상태</p>
-      <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-8">
-        현재 상태와<br/>다음 단계
+    <div class="max-w-3xl mx-auto rv">
+      <p class="label mb-6 text-center">현재 상태</p>
+      <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-10 text-center">
+        가설에서 검증으로
       </h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+      <!-- v1 가설 vs v2 결과 테이블 -->
+      <div class="bg-surface-card rounded-[16px] p-6 border border-bdr-card mb-10">
+        <p class="text-[11px] font-bold tracking-wider uppercase text-txt-muted mb-5">v1 가설 → v2 결과</p>
+        <div class="space-y-4 text-[13px]">
+          <div class="grid grid-cols-[1fr_1fr] gap-4 pb-3 border-b border-bdr-subtle">
+            <p class="text-txt-muted font-medium">v1에서 세운 가설</p>
+            <p class="text-txt-muted font-medium">v2 결과</p>
+          </div>
+          <div class="grid grid-cols-[1fr_1fr] gap-4">
+            <p class="text-txt-secondary">실사용자 검증 필요</p>
+            <p class="text-txt-primary">부모님 실사용 중. 피드백 → 당일 수정 사이클 반복</p>
+          </div>
+          <div class="grid grid-cols-[1fr_1fr] gap-4">
+            <p class="text-txt-secondary">아침 브리핑</p>
+            <p class="text-txt-primary">완료. 홈 = AI 모닝 브리핑 + 날짜별 히스토리 + 계좌 탭</p>
+          </div>
+          <div class="grid grid-cols-[1fr_1fr] gap-4">
+            <p class="text-txt-secondary">Claude API 전환</p>
+            <p class="text-txt-primary">미전환. Haiku로 속도 개선, 비용 추적 중</p>
+          </div>
+          <div class="grid grid-cols-[1fr_1fr] gap-4">
+            <p class="text-txt-secondary">계좌 연동 불가 (제약)</p>
+            <p class="text-txt-primary">KIS OAuth 연동 완료 — 잔고 자동 동기화. OCR과 용도 분리</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 현재 기능 범위 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center mb-10">
         <div>
           <p class="giant text-5xl mb-2">6</p>
           <p class="text-txt-muted text-sm">전문 에이전트<br/><span class="text-[11px]">기술·펀더멘털·매크로·뉴스·원자재·연관종목</span></p>
@@ -1142,20 +1200,22 @@ tailwind.config = {
           <p class="text-txt-muted text-sm">한국·미국 종목<br/><span class="text-[11px]">KRX 전체 + NASDAQ/NYSE</span></p>
         </div>
       </div>
-      <div class="mt-10 pt-8 border-t border-bdr-subtle">
-        <p class="text-[11px] font-bold tracking-wider uppercase text-jj-blue mb-4">Next Steps</p>
+
+      <!-- Next Steps -->
+      <div class="pt-8 border-t border-bdr-subtle">
+        <p class="text-[11px] font-bold tracking-wider uppercase text-jj-blue mb-4 text-center">Next Steps</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
           <div class="rounded-xl p-5 bg-surface-card border border-jj-blue/20 md:col-span-2">
-            <p class="text-sm font-bold mb-1 text-jj-blue">실사용자 검증</p>
-            <p class="text-[12px] text-txt-secondary">부모님 + 직장인 3~5명 대상 사용성 테스트. "토론 결과를 보고 실제로 판단에 도움이 됐는지" 측정. 이 결과에 따라 다음 우선순위가 결정됨</p>
+            <p class="text-sm font-bold mb-1 text-jj-blue">사용자 확대</p>
+            <p class="text-[12px] text-txt-secondary">부모님 외 직장인 3~5명한테 써보게 하고, 브리핑이 실제 판단에 도움 되는지 확인</p>
           </div>
           <div class="rounded-xl p-4 bg-surface-card border border-bdr-card">
-            <p class="text-sm font-bold mb-1">아침 브리핑</p>
-            <p class="text-[12px] text-txt-secondary">재현의 "출근길 5분" 시나리오. 보유 종목 변동 요약 + 오늘 주목할 이슈 자동 생성</p>
+            <p class="text-sm font-bold mb-1">배포 안정화</p>
+            <p class="text-[12px] text-txt-secondary">ngrok(로컬) → 클라우드 서버로 옮겨서 상시 접근 가능하게</p>
           </div>
           <div class="rounded-xl p-4 bg-surface-card border border-bdr-card">
             <p class="text-sm font-bold mb-1">Claude API 전환</p>
-            <p class="text-txt-secondary text-[12px]">동시 호출 제한 해소 + 응답 속도 개선. 사용자 늘어나면 전환 예정</p>
+            <p class="text-txt-secondary text-[12px]">사용자 늘면 동시 호출 제한 풀어야 함</p>
           </div>
         </div>
       </div>
