@@ -121,7 +121,7 @@
 
 ## 5. DESIGN.md 스펙
 
-**위치:** `/Users/ellie/Documents/elliebinn.github.io/DESIGN.md`
+**위치:** `/Users/ellie/Projects/elliebinn.github.io/DESIGN.md`
 **언어:** 한국어 + 영어 이중 작성 (각 섹션에 두 언어 병기)
 
 **포맷:** awesome-design-md의 9섹션 + 확장 2섹션

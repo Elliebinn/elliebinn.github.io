@@ -19,9 +19,9 @@
 set -uo pipefail
 
 # ─── Targets ────────────────────────────────────────────────────────────
-DATA_TS="/Users/ellie/Documents/elliebinn.github.io/src/data/resume.ts"
-WEB_KO="/Users/ellie/Documents/elliebinn.github.io/src/pages/ko/resume.astro"
-PDF_KO="/Users/ellie/Documents/elliebinn.github.io/src/pages/ko/resume-pdf.astro"
+DATA_TS="/Users/ellie/Projects/elliebinn.github.io/src/data/resume.ts"
+WEB_KO="/Users/ellie/Projects/elliebinn.github.io/src/pages/ko/resume.astro"
+PDF_KO="/Users/ellie/Projects/elliebinn.github.io/src/pages/ko/resume-pdf.astro"
 OBSIDIAN_MD="/Users/ellie/Desktop/obsidian/hyebin-vault/3-career/resume/resume-common.md"
 LINKEDIN_MD="/Users/ellie/Desktop/obsidian/hyebin-vault/3-career/linkedin-about.md"
 

@@ -15,7 +15,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { resume, stripBold } from '../src/data/resume.ts';
 
 const TARGET_PATH =
-  '/Users/ellie/Documents/career-planner/linkedin-about.md';
+  '/Users/ellie/Projects/career-planner/linkedin-about.md';
 
 const START_MARKER =
   '<!-- GENERATED:START — 이 블록은 자동 생성됩니다. 수정하려면 portfolio/src/data/resume.ts의 linkedin 필드를 수정하고 `npm run sync:resume` 실행. -->';

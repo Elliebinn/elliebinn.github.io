@@ -15,7 +15,7 @@ import { dirname } from 'node:path';
 import { careerStatement } from '../src/data/career-statement.ts';
 
 const OUTPUT_PATH =
-  '/Users/ellie/Documents/career-planner/career-statement.md';
+  '/Users/ellie/Projects/career-planner/career-statement.md';
 
 function keepBold(text: string): string {
   return text;
