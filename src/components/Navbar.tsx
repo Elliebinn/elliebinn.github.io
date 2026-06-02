@@ -30,7 +30,6 @@ export default function Navbar({ lang = 'en' as Lang }: { lang?: Lang }) {
     { label: tr.nav.home, href: `${BASE}/${lang}/` },
     { label: tr.nav.projects, href: `${BASE}/${lang}/#projects` },
     { label: tr.nav.blog, href: `${BASE}/${lang}/blog/` },
-    { label: tr.nav.resume, href: `${BASE}/${lang}/resume/` },
   ];
 
   const otherLang = getOtherLang(lang);
