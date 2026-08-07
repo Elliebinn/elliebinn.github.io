@@ -1,0 +1,495 @@
+---
+import V2Layout from '../../../layouts/V2Layout.astro';
+---
+<V2Layout title="Alpha Storage — 전략 자산을 저장·검증·발행하는 시스템 설계" lang="ko">
+
+<script is:inline src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script is:inline>
+  tailwind.config = { theme: { extend: {
+    colors: {
+      surface: { page:'var(--s-page)', card:'var(--s-card)', subtle:'var(--s-subtle)', elevated:'var(--s-elevated)' },
+      aed: { slate:'#4B6878', 'slate-soft':'#8BA4B4', emerald:'#1E6A4F', red:'#D04040', amber:'#D4A05A', violet:'#8688e1' },
+      txt: { primary:'var(--t-primary)', secondary:'var(--t-secondary)', muted:'var(--t-muted)', faint:'var(--t-faint)' },
+      bdr: { card:'var(--b-card)', subtle:'var(--b-subtle)' },
+    },
+    fontFamily: {
+      sans: ['Pretendard','-apple-system','system-ui','sans-serif'],
+      display: ['Space Grotesk','Pretendard','sans-serif'],
+      mono: ['IBM Plex Mono','ui-monospace','monospace'],
+    },
+  }}}
+</script>
+<style is:inline>
+  :root, html[data-theme="dark"] {
+    --s-page:#131313; --s-card:#1e1e1e; --s-subtle:#1a1a1a; --s-elevated:#2a2a2a;
+    --t-primary:#f2f2f0; --t-secondary:#a0a0a0; --t-muted:#6b6b6b; --t-faint:#444;
+    --b-card:rgba(226,226,226,0.15); --b-subtle:rgba(226,226,226,0.08);
+    --glass-bg:rgba(255,255,255,0.06); --glass-border:rgba(255,255,255,0.1);
+    --nav-pill-bg:rgba(12,12,11,0.8);
+  }
+  html[data-theme="light"] {
+    --s-page:#F0EDE5; --s-card:#ffffff; --s-subtle:#E8E4DA; --s-elevated:#f5f3ef;
+    --t-primary:#161513; --t-secondary:#5a5754; --t-muted:#8a8784; --t-faint:#bbb8b4;
+    --b-card:rgba(0,0,0,0.08); --b-subtle:rgba(0,0,0,0.04);
+    --glass-bg:rgba(0,0,0,0.03); --glass-border:rgba(0,0,0,0.08);
+    --nav-pill-bg:rgba(240,237,229,0.8);
+  }
+  html, body { max-width:100vw; overflow-x:hidden; }
+  body { -webkit-font-smoothing:antialiased; word-break:keep-all; background:var(--s-page); color:var(--t-primary); transition:background .3s,color .3s; }
+  .font-display { font-family:'Space Grotesk','Pretendard',sans-serif; }
+  .font-mono { font-family:'IBM Plex Mono',ui-monospace,monospace; }
+  .label { font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#8BA4B4; }
+  .giant { font-family:'Space Grotesk',sans-serif; font-weight:700; letter-spacing:-0.04em; line-height:1; }
+  .rv { opacity:0; transform:translateY(24px); transition:opacity .8s cubic-bezier(0.16,1,0.3,1), transform .8s cubic-bezier(0.16,1,0.3,1); }
+  .rv.vis { opacity:1; transform:none; }
+  .rv-d1 { transition-delay:.08s; } .rv-d2 { transition-delay:.16s; } .rv-d3 { transition-delay:.24s; }
+  .cs-nav { position:fixed; top:0; left:0; right:0; z-index:9990; padding:22px 44px; display:flex; justify-content:space-between; align-items:center; transition:all .45s cubic-bezier(0.25,0.46,0.45,0.94); }
+  .cs-nav.scrolled { top:16px; left:22%; right:22%; padding:14px 36px; border-radius:100px; background:var(--nav-pill-bg); backdrop-filter:blur(20px); box-shadow:0 4px 24px rgba(0,0,0,0.25); }
+  .cs-nav-brand { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; color:var(--t-primary); text-decoration:none; }
+  .cs-theme-btn { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:100px; border:1px solid var(--b-card); background:transparent; color:var(--t-primary); font-size:12px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; }
+  .cs-back-link { font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--t-muted); text-decoration:none; }
+  .cs-back-link:hover { color:var(--t-primary); }
+  @media (max-width:900px){ .cs-nav.scrolled{ left:5%; right:5%; } .cs-nav{ padding:16px 20px; } }
+  .shot { border-radius:16px; overflow:hidden; border:1px solid var(--b-subtle); background:var(--s-subtle); transition:transform .45s cubic-bezier(0.16,1,0.3,1), box-shadow .45s, border-color .45s; }
+  .shot img { width:100%; display:block; }
+  .shot:hover { transform:translateY(-4px); box-shadow:0 18px 48px rgba(0,0,0,0.22); border-color:var(--b-card); }
+  .shot-cap { font-size:11px; color:var(--t-muted); text-align:center; padding:12px; }
+  .progress { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,#4B6878,#8BA4B4); z-index:9999; transition:width .08s linear; }
+  .de-seg { color:var(--t-muted); background:transparent; border:none; cursor:pointer; }
+  .de-seg.active { background:var(--s-card); color:var(--t-primary); box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+  .de-tab { border:1px solid var(--b-subtle); background:transparent; color:var(--t-secondary); border-radius:100px; padding:7px 16px; font-size:13px; font-weight:500; cursor:pointer; transition:all .25s; }
+  .de-tab:hover { border-color:var(--b-card); color:var(--t-primary); }
+  .de-tab.active { background:#4B6878; color:#fff; border-color:#4B6878; }
+  #deImg { transition:opacity .3s; }
+  .chip { display:inline-flex; align-items:center; gap:6px; border-radius:100px; padding:4px 12px; font-size:11px; font-weight:700; letter-spacing:0.04em; }
+  @media (max-width:640px){
+    .case-hero-title{ font-size:clamp(34px,8.5vw,50px)!important; }
+    .font-display.text-4xl{ font-size:1.6rem!important; }
+    .giant{ font-size:2.6rem!important; }
+    .hero-sec{ min-height:auto!important; padding-top:100px; padding-bottom:8px; }
+    .hero-inner{ padding-left:22px!important; padding-right:22px!important; padding-bottom:48px!important; }
+    .hero-meta{ gap:22px!important; }
+    .cs-nav{ padding:16px 20px!important; }
+  }
+</style>
+
+<div class="progress" id="prog"></div>
+
+<nav class="cs-nav" id="csNav">
+  <a href="#" class="cs-nav-brand">Hyebin.</a>
+  <div style="display:flex; align-items:center; gap:24px;">
+    <a href="#" class="cs-back-link">Back Home</a>
+    <button class="cs-theme-btn" id="csThemeBtn">◐ Dark</button>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="relative hero-sec" style="min-height:100dvh; display:flex; align-items:flex-end; background:#0a0a0a;">
+  <div style="position:absolute; inset:0; z-index:0;">
+    <img src="/images/alpha-storage/composite-composition.png" alt="" style="width:100%; height:100%; object-fit:cover; opacity:0.22;" />
+    <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(10,10,10,0.94) 0%, rgba(10,10,10,0.6) 45%, rgba(10,10,10,0.45) 100%);"></div>
+  </div>
+  <div style="position:absolute; right:40px; top:50%; transform:translateY(-50%); font-family:'Space Grotesk',sans-serif; font-size:clamp(120px,20vw,240px); font-weight:700; letter-spacing:-0.05em; color:rgba(226,226,226,0.035); z-index:0; line-height:1;">AS</div>
+  <div class="hero-inner" style="position:relative; z-index:3; width:100%; max-width:1400px; margin:0 auto; padding:0 44px 80px;">
+    <p class="label" style="color:#8BA4B4; margin-bottom:20px;">Alpha Storage · 알파브릿지</p>
+    <h1 class="case-hero-title font-display" style="color:#f2f2f0; font-size:clamp(44px,6.4vw,86px); font-weight:700; letter-spacing:-0.03em; line-height:1.05; margin:0;">
+      451개의 단일 알파를,<br/>고객에게 내놓을 <span style="color:#8BA4B4;">상품</span>으로.
+    </h1>
+    <p style="color:rgba(255,255,255,0.62); font-size:17px; margin-top:24px; max-width:680px; line-height:1.75;">
+      쏟아지는 퀀트 전략을 저장하고, 백테스트–포워드–라이브로 검증하고,<br/>
+      완성된 합성전략만 골라 고객에게 발행하는 <strong style="color:#e2e2e2;">전략 자산의 단일 원장</strong>.<br/>
+      운용 경험을 가진 기획자가 17개 화면의 정보구조와 상태 모델을 설계했습니다.
+    </p>
+    <dl class="hero-meta" style="display:flex; flex-wrap:wrap; gap:48px; padding:32px 0 0; margin-top:28px; border-top:1px solid rgba(255,255,255,0.12);">
+      <div><dt style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4);">Company</dt><dd style="color:#f2f2f0; font-weight:600; margin-top:6px;">알파브릿지 (Alphabridge)</dd></div>
+      <div><dt style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4);">Year</dt><dd style="color:#f2f2f0; font-weight:600; margin-top:6px;">2026 · v0.5 MVP</dd></div>
+      <div><dt style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4);">Type</dt><dd style="color:#f2f2f0; font-weight:600; margin-top:6px;">FinTech · 사내 운영 툴</dd></div>
+      <div><dt style="font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.4);">Role</dt><dd style="color:#f2f2f0; font-weight:600; margin-top:6px;">기획 · IA · 화면 설계 · 프론트</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="py-32">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="max-w-3xl mb-16 rv">
+      <p class="label mb-4">배경</p>
+      <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">전략은 쏟아지는데,<br/>저장할 원장이 없었습니다</h2>
+      <p class="mt-6 text-txt-secondary text-lg leading-relaxed">
+        전략 생성 엔진이 돌면서 개별 알파는 2,824건까지 늘었고, 카탈로그에 올릴 단일전략만 451개.
+        하지만 이걸 <strong class="text-txt-primary">한 곳에 저장하고, 같은 기준으로 검증하고, 고객에게 내놓을 형태로 조합·발행</strong>하는 시스템이 없었습니다.
+      </p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rv rounded-[16px] p-6 bg-surface-card"><div class="w-8 h-8 rounded-full bg-aed-slate/12 flex items-center justify-center text-aed-slate font-bold mb-4">01</div><h4 class="font-bold mb-2">흩어진 원장</h4><p class="text-sm text-txt-secondary leading-relaxed">전략이 로컬·스냅샷·스크립트에 흩어져, "지금 우리가 가진 전략이 뭔지" 한눈에 볼 곳이 없었습니다.</p></div>
+      <div class="rv rv-d1 rounded-[16px] p-6 bg-surface-card"><div class="w-8 h-8 rounded-full bg-aed-slate/12 flex items-center justify-center text-aed-slate font-bold mb-4">02</div><h4 class="font-bold mb-2">제각각 검증 기준</h4><p class="text-sm text-txt-secondary leading-relaxed">같은 전략을 사람마다 다른 구간·지표로 봤습니다. IS/OS/LIVE로 검증을 표준화할 축이 필요했습니다.</p></div>
+      <div class="rv rv-d2 rounded-[16px] p-6 bg-surface-card"><div class="w-8 h-8 rounded-full bg-aed-slate/12 flex items-center justify-center text-aed-slate font-bold mb-4">03</div><h4 class="font-bold mb-2">상품화 경로 부재</h4><p class="text-sm text-txt-secondary leading-relaxed">검증된 전략을 고객에게 내놓으려면 무엇을 공개하고 무엇을 감출지의 규칙 자체가 없었습니다.</p></div>
+      <div class="rv rv-d3 rounded-[16px] p-6 bg-surface-card"><div class="w-8 h-8 rounded-full bg-aed-slate/12 flex items-center justify-center text-aed-slate font-bold mb-4">04</div><h4 class="font-bold mb-2">운영 관측 부재</h4><p class="text-sm text-txt-secondary leading-relaxed">매일 도는 배치가 성공했는지, 어떤 전략이 실패해 합성까지 번졌는지 확인할 방법이 없었습니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCT MODEL ============ -->
+<section class="py-32 bg-surface-subtle">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="max-w-3xl mb-16 rv">
+      <p class="label mb-4">제품 모델</p>
+      <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">단일 → 합성 → 발행,<br/>전략이 상품이 되는 흐름</h2>
+      <p class="mt-6 text-txt-secondary text-lg leading-relaxed">제품의 뼈대는 세 개의 객체와 그 사이의 전이입니다.</p>
+    </div>
+
+    <!-- pipeline -->
+    <div class="grid md:grid-cols-3 gap-4 rv mb-6">
+      <div class="rounded-[20px] p-7 bg-surface-card">
+        <div class="flex items-center justify-between mb-4"><span class="chip" style="background:rgba(75,104,120,0.12); color:#8BA4B4;">단일전략</span><span class="giant text-4xl text-txt-primary">451</span></div>
+        <h4 class="font-display font-bold text-xl mb-2">빌딩 블록</h4>
+        <p class="text-[14px] text-txt-secondary leading-relaxed">개별 알파 하나. 자기만의 유니버스·벤치마크·리밸 규칙과 백테스트를 가진 검증 단위.</p>
+      </div>
+      <div class="rounded-[20px] p-7 bg-surface-card">
+        <div class="flex items-center justify-between mb-4"><span class="chip" style="background:rgba(134,136,225,0.14); color:#8688e1;">합성전략</span><span class="giant text-4xl text-txt-primary">9</span></div>
+        <h4 class="font-display font-bold text-xl mb-2">엔진이 조합한 fund-of-alphas</h4>
+        <p class="text-[14px] text-txt-secondary leading-relaxed">합성 엔진이 회차마다 단일전략을 레그로 골라 <strong class="text-txt-primary">등비중(1/n)</strong>으로 조합. 구성·비중이 리밸마다 바뀝니다.</p>
+      </div>
+      <div class="rounded-[20px] p-7 bg-surface-card" style="border:1px solid rgba(30,106,79,0.3);">
+        <div class="flex items-center justify-between mb-4"><span class="chip" style="background:rgba(30,106,79,0.16); color:#8BA4B4;">포트허브 발행</span><span class="giant text-4xl text-aed-emerald">↗</span></div>
+        <h4 class="font-display font-bold text-xl mb-2">고객에게 내놓는 상품</h4>
+        <p class="text-[14px] text-txt-secondary leading-relaxed">검증된 합성전략만 골라 외부 고객에게 <strong class="text-txt-primary">읽기전용</strong>으로 발행. 원장은 내부가 소유, 사본만 동기화.</p>
+      </div>
+    </div>
+    <p class="text-center text-[13px] text-txt-muted rv mb-16">단일은 <em>연구 산출물</em>(IS→OS로 판정), 합성은 <em>운영·상품</em>(LIVE까지 가고 발행된다) — 그래서 상세 구조가 다릅니다.</p>
+
+    <!-- single vs composite detail structure -->
+    <div class="grid md:grid-cols-2 gap-6 rv">
+      <div class="rounded-[16px] p-6 bg-surface-card">
+        <p class="text-[11px] font-bold tracking-wider uppercase text-txt-muted mb-4">단일전략 상세 · 탭 3</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="chip bg-surface-subtle text-txt-secondary">성과</span>
+          <span class="chip bg-surface-subtle text-txt-secondary">보유종목</span>
+          <span class="chip bg-surface-subtle text-txt-secondary">변경 이력 <span class="text-txt-faint">· P2</span></span>
+        </div>
+      </div>
+      <div class="rounded-[16px] p-6 bg-surface-card" style="border:1px solid rgba(134,136,225,0.25);">
+        <p class="text-[11px] font-bold tracking-wider uppercase text-aed-violet mb-4">합성전략 상세 · 탭 4</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="chip bg-surface-subtle text-txt-secondary">성과 <span class="text-txt-faint">+ LIVE</span></span>
+          <span class="chip" style="background:rgba(134,136,225,0.14); color:#8688e1;">구성 ★</span>
+          <span class="chip bg-surface-subtle text-txt-secondary">보유종목</span>
+          <span class="chip bg-surface-subtle text-txt-secondary">변경 이력 <span class="text-txt-faint">· P2</span></span>
+        </div>
+        <p class="text-[13px] text-txt-secondary leading-relaxed mt-4"><strong class="text-txt-primary">구성(★)</strong> 탭이 합성전략의 존재 이유입니다 — 어떤 단일들로, 어떤 비중으로 만들어졌고 그 구성이 어떻게 변해왔는지. 각 레그는 자기 단일전략 상세로 이동합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KEY DECISIONS ============ -->
+<section class="py-32">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="max-w-3xl mb-20 rv">
+      <p class="label mb-4">핵심 기획 판단</p>
+      <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">화면이 아니라,<br/>모델을 설계했습니다</h2>
+      <p class="mt-6 text-txt-secondary text-lg leading-relaxed">이 제품의 방향을 정한 네 가지 판단.</p>
+    </div>
+
+    <!-- Decision 1: 3-axis status -->
+    <div class="mb-28 rv">
+      <div class="flex items-center gap-3 mb-5"><div class="w-8 h-8 rounded-full bg-aed-slate/10 flex items-center justify-center text-aed-slate font-display font-bold text-xs">01</div><span class="font-display font-bold text-lg">상태를 하나로 뭉개지 않았다</span></div>
+      <div class="grid lg:grid-cols-2 gap-12 items-start">
+        <div>
+          <h3 class="font-display text-2xl md:text-3xl font-bold tracking-tight mb-4">상태는 하나가 아니라 세 축입니다</h3>
+          <p class="text-txt-secondary text-[15px] leading-relaxed mb-6">
+            흔히 "상태" 하나로 합치지만, 전략은 <strong class="text-txt-primary">운영 단계 · 배치 건강 · 공개 여부</strong>가 서로 독립적입니다.
+            라이브로 운영 중인데 오늘 배치가 실패했고 아직 미공개일 수 있습니다.
+            상태 필드 하나로 합쳤다면 사용자에게 거짓말을 하게 됩니다.
+          </p>
+          <p class="text-txt-secondary text-[15px] leading-relaxed">합성의 배치 상태는 <strong class="text-txt-primary">구성 단일 중 최악을 승격</strong>해서 보여줍니다 — 레그 하나가 실패하면 합성도 실패로.</p>
+        </div>
+        <div class="space-y-4">
+          <div class="rounded-[14px] p-5 bg-surface-card" style="border:1px solid rgba(208,64,64,0.25);">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-aed-red mb-3">Before · 상태 필드 1개</p>
+            <div class="flex flex-wrap items-center gap-2 text-[13px]">
+              <span class="rounded px-2 py-1 bg-surface-subtle text-txt-muted line-through">live</span>
+              <span class="text-txt-secondary">← 배치 실패도, 미공개도 이 한 칸으로는 표현 불가</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-aed-emerald mb-3">After · 독립 3축</p>
+            <div class="grid grid-cols-3 gap-3">
+              <div class="rounded-[14px] p-5 bg-surface-card"><p class="text-[10px] font-bold uppercase tracking-wider text-txt-muted mb-3">운영</p><div class="space-y-1.5 text-[13px]"><p class="text-txt-secondary">forward</p><p class="text-aed-emerald font-medium">live</p><p class="text-txt-muted">deprecated</p></div></div>
+              <div class="rounded-[14px] p-5 bg-surface-card"><p class="text-[10px] font-bold uppercase tracking-wider text-txt-muted mb-3">배치</p><div class="space-y-1.5 text-[13px]"><p class="text-aed-emerald">성공</p><p class="text-aed-red">실패</p><p class="text-txt-muted">미실행 · 지연</p></div></div>
+              <div class="rounded-[14px] p-5 bg-surface-card"><p class="text-[10px] font-bold uppercase tracking-wider text-txt-muted mb-3">공개</p><div class="space-y-1.5 text-[13px]"><p class="text-txt-secondary">검토중</p><p class="text-aed-violet font-medium">공개예정</p><p class="text-txt-muted">회수</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision 2: actionable failure -->
+    <div class="mb-28 rv">
+      <div class="flex items-center gap-3 mb-5"><div class="w-8 h-8 rounded-full bg-aed-slate/10 flex items-center justify-center text-aed-slate font-display font-bold text-xs">02</div><span class="font-display font-bold text-lg">실패를 '행동 가능하게'</span></div>
+      <div class="grid lg:grid-cols-2 gap-12 items-start">
+        <div class="lg:order-2 shot"><img src="/images/alpha-storage/batch-rerun.png" alt="배치 이력·재실행 — 실패 진단" loading="lazy" /><p class="shot-cap">배치 이력·재실행 (Phase 2) — 원인별 진단 + 재실행 가드레일</p></div>
+        <div class="lg:order-1">
+          <h3 class="font-display text-2xl md:text-3xl font-bold tracking-tight mb-4">"실패"만 보여주면 아무도 못 움직입니다</h3>
+          <p class="text-txt-secondary text-[15px] leading-relaxed mb-6">
+            실패를 6가지로 분류하고(<span class="font-mono text-[12.5px] text-txt-primary">compute · transient · upstream_missing · validation · dependency · unknown</span>), 각 원인에 <strong class="text-txt-primary">처방된 행동</strong>을 붙였습니다.
+            상류 데이터가 없어 생긴 실패라면 재실행 버튼을 <strong class="text-txt-primary">아예 비활성화</strong>하고 "지금 수동 재실행은 효과가 없습니다"라고 알려줍니다.
+          </p>
+          <p class="text-txt-secondary text-[15px] leading-relaxed">연쇄도 설명합니다 — "같은 날 perf도 실패(dependency · pnl 실패 때문)". 무엇을·왜·다음에 뭘 해야 하는지까지가 화면의 일입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision 3: human + machine object -->
+    <div class="mb-28 rv">
+      <div class="flex items-center gap-3 mb-5"><div class="w-8 h-8 rounded-full bg-aed-slate/10 flex items-center justify-center text-aed-slate font-display font-bold text-xs">03</div><span class="font-display font-bold text-lg">사람과 기계가 함께 쓰는 객체</span></div>
+      <div class="grid lg:grid-cols-2 gap-12 items-start">
+        <div>
+          <h3 class="font-display text-2xl md:text-3xl font-bold tracking-tight mb-4">불투명한 앙상블을 읽히게 만들다</h3>
+          <p class="text-txt-secondary text-[15px] leading-relaxed mb-6">
+            합성전략은 <strong class="text-txt-primary">공동 저작물</strong>입니다. 합성 엔진이 회차마다 레그를 고르고 비중을 재계산(등비중, 레그 수 바뀌면 전원 재계산)하며 변경을 <span class="font-mono text-[12.5px] text-txt-primary">v1→v2→v3</span>로 자동 기록합니다. 사람은 서사(설명·메모)와 운영 상태를 정합니다.
+          </p>
+          <p class="text-txt-secondary text-[15px] leading-relaxed">구성 탭은 레그를 <strong class="text-txt-primary">resid-IR 순</strong>으로 세우고, 하단 차트로 "레그가 언제 들어오고 빠졌는지"의 변천을 보여줍니다. 알고리즘의 판단을 사람이 감사할 수 있게 만드는 것이 핵심이었습니다.</p>
+        </div>
+        <div class="shot"><img src="/images/alpha-storage/composite-composition.png" alt="합성전략 구성 탭 — 레그 구성과 변천" loading="lazy" /><p class="shot-cap">합성전략 · 구성 탭 — 레그·비중·resid-IR + 구성 변천 차트</p></div>
+      </div>
+    </div>
+
+    <!-- Decision 4: publish as IP boundary -->
+    <div class="rv">
+      <div class="flex items-center gap-3 mb-5"><div class="w-8 h-8 rounded-full bg-aed-slate/10 flex items-center justify-center text-aed-slate font-display font-bold text-xs">04</div><span class="font-display font-bold text-lg">발행 = 데이터 넘김이 아니라 IP 경계</span></div>
+      <div class="grid lg:grid-cols-2 gap-12 items-start">
+        <div class="lg:order-2 shot"><img src="/images/alpha-storage/publish-modal.png" alt="포트허브 발행 모달" loading="lazy" /><p class="shot-cap">포트허브 발행 모달 — 공개/비공개 경계 명시</p></div>
+        <div class="lg:order-1">
+          <h3 class="font-display text-2xl md:text-3xl font-bold tracking-tight mb-4">신뢰는 팔되, 알파는 지킨다</h3>
+          <p class="text-txt-secondary text-[15px] leading-relaxed mb-6">
+            발행은 고객에게 성과를 증명하는 행위이지, 전략을 넘기는 행위가 아닙니다. 그래서 <strong class="text-txt-primary">공개/비공개 경계</strong>를 화면에 명시했습니다.
+          </p>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-[14px] p-5 bg-surface-card" style="border:1px solid rgba(30,106,79,0.25);"><p class="text-[10px] font-bold uppercase tracking-wider text-aed-emerald mb-3">공개</p><ul class="text-[13px] text-txt-secondary space-y-1.5 leading-relaxed"><li>IS/OS/LIVE 성과</li><li>검토 메모</li><li>구성 요약(비중)</li></ul></div>
+            <div class="rounded-[14px] p-5 bg-surface-card" style="border:1px solid rgba(208,64,64,0.25);"><p class="text-[10px] font-bold uppercase tracking-wider text-aed-red mb-3">비공개</p><ul class="text-[13px] text-txt-secondary space-y-1.5 leading-relaxed"><li>레그 목록 · 정확 비중</li><li>THESIS 수식</li><li>sec_id · 스냅샷 경로</li></ul></div>
+          </div>
+          <p class="text-txt-secondary text-[14px] leading-relaxed mt-4">원장은 내부가 소유하고 포트허브엔 <strong class="text-txt-primary">사본만 동기화</strong>, 발행은 <strong class="text-txt-primary">언제든 회수</strong> 가능합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPEN QUESTIONS ============ -->
+<section class="py-32">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="max-w-3xl mb-14 rv">
+      <p class="label mb-4">열린 설계 질문</p>
+      <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">정답이 없을 때,<br/>무엇을 택했나</h2>
+      <p class="mt-6 text-txt-secondary text-lg leading-relaxed">기획은 확정만 하는 일이 아닙니다. 아직 답이 없는 질문을 <strong class="text-txt-primary">열어두고, 근거와 함께 기울기를 정하는 것</strong>도 설계입니다.</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <!-- Q1 -->
+      <div class="rv rounded-[20px] p-7 bg-surface-card" style="box-shadow:0 10px 36px rgba(0,0,0,0.1);">
+        <div class="flex items-center gap-2 mb-4"><span class="chip" style="background:rgba(212,160,90,0.15); color:#D4A05A;">미결정</span><span class="text-[11px] text-txt-muted">전략 종료 · S6</span></div>
+        <h3 class="font-display font-bold text-xl mb-4 leading-snug">전략을 종료하면, 그 전략을 쓰던 합성에서 자동으로 빼야 할까?</h3>
+        <div class="space-y-3 mb-5">
+          <div class="rounded-[12px] p-4 bg-surface-subtle"><p class="text-[12px] font-bold text-txt-primary mb-1">A · 자동 제외</p><p class="text-[13px] text-txt-secondary leading-relaxed">죽은 전략이 상품에 남지 않음(안전). 단, 사용자 예고 없이 합성 구성·비중이 재계산됨.</p></div>
+          <div class="rounded-[12px] p-4 bg-surface-subtle"><p class="text-[12px] font-bold text-txt-primary mb-1">B · 수동 유지</p><p class="text-[13px] text-txt-secondary leading-relaxed">구성 변경은 명시적 행동으로만(투명). 단, 종료된 전략이 합성에 남아있을 위험.</p></div>
+        </div>
+        <div class="pt-4 border-t border-bdr-subtle"><p class="text-[11px] font-bold uppercase tracking-wider text-aed-emerald mb-1">기울기</p><p class="text-[13.5px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">종료 시 영향받는 합성을 먼저 보여주고, 제외는 이력에 남긴다.</strong> 감사 가능성(모든 변경은 기록)이라는 제품 원칙과 일관되게 — "조용히 바꾸지 않는다".</p></div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="rv rv-d1 rounded-[20px] p-7 bg-surface-card" style="box-shadow:0 10px 36px rgba(0,0,0,0.1);">
+        <div class="flex items-center gap-2 mb-4"><span class="chip" style="background:rgba(212,160,90,0.15); color:#D4A05A;">미결정</span><span class="text-[11px] text-txt-muted">계정 관리 · S11</span></div>
+        <h3 class="font-display font-bold text-xl mb-4 leading-snug">계정은 어떻게 만들고, 비밀번호는 어떻게 재설정할까?</h3>
+        <div class="space-y-3 mb-5">
+          <div class="rounded-[12px] p-4 bg-surface-subtle"><p class="text-[12px] font-bold text-txt-primary mb-1">A · 셀프 초대·재설정 흐름</p><p class="text-[13px] text-txt-secondary leading-relaxed">확장에 강함. 단, 소수 내부 사용자에겐 과설계 — 이메일·토큰·만료까지 화면이 늘어남.</p></div>
+          <div class="rounded-[12px] p-4 bg-surface-subtle"><p class="text-[12px] font-bold text-txt-primary mb-1">B · 관리자 수동 생성</p><p class="text-[13px] text-txt-secondary leading-relaxed">지금 팀 규모에 맞음(리서처 소수 + 관리자). 단, 사람이 늘면 병목.</p></div>
+        </div>
+        <div class="pt-4 border-t border-bdr-subtle"><p class="text-[11px] font-bold uppercase tracking-wider text-aed-emerald mb-1">기울기</p><p class="text-[13.5px] text-txt-secondary leading-relaxed"><strong class="text-txt-primary">MVP는 관리자 수동 생성으로 시작.</strong> 셀프서비스 화면은 P2로 미루되, 계정 변경은 처음부터 <span class="font-mono text-[12px] text-txt-primary">alpha_access_log</span>에 기록해 나중에 자동화해도 이력이 이어지게.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ IA & PRIORITY ============ -->
+<section class="py-32 bg-surface-subtle">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="max-w-3xl mb-16 rv">
+      <p class="label mb-4">정보 구조 · 우선순위</p>
+      <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">17개 화면,<br/>무엇을 먼저 낼지의 판단</h2>
+    </div>
+    <div class="grid lg:grid-cols-[1.3fr_0.7fr] gap-10">
+      <!-- IA tree -->
+      <div class="rv rounded-[16px] p-7 bg-surface-card">
+        <div class="grid sm:grid-cols-2 gap-x-8 gap-y-6 text-[14px]">
+          <div><p class="font-display font-bold mb-2">인증</p><ul class="text-txt-secondary space-y-1"><li>로그인 · 로그아웃</li></ul></div>
+          <div><p class="font-display font-bold mb-2">운영 <span class="chip ml-1" style="background:rgba(212,160,90,0.15); color:#D4A05A;">P2</span></p><ul class="text-txt-secondary space-y-1"><li>통합 운용 대시보드</li><li>배치 이력 · 재실행</li></ul></div>
+          <div><p class="font-display font-bold mb-2">단일전략</p><ul class="text-txt-secondary space-y-1"><li>카탈로그</li><li>상세 — 성과 · 보유종목 · <span class="text-txt-muted">변경이력(P2)</span></li><li>종료 · 정보수정 모달</li></ul></div>
+          <div><p class="font-display font-bold mb-2">합성전략</p><ul class="text-txt-secondary space-y-1"><li>카탈로그</li><li>상세 — 성과 · <span class="text-aed-violet">구성</span> · 보유종목 · <span class="text-txt-muted">변경이력(P2)</span></li><li>포트허브 발행 모달</li></ul></div>
+          <div><p class="font-display font-bold mb-2">관리</p><ul class="text-txt-secondary space-y-1"><li>계정 관리(관리자)</li></ul></div>
+        </div>
+      </div>
+      <!-- priority rationale -->
+      <div class="rv rv-d1 rounded-[16px] p-7 bg-surface-card">
+        <p class="text-[11px] font-bold tracking-wider uppercase text-txt-muted mb-4">MVP는 무엇을 먼저 냈나</p>
+        <div class="space-y-4 text-[14px] text-txt-secondary leading-relaxed">
+          <p><strong class="text-txt-primary">MVP = 라이브러리 + 발행.</strong> 전략을 보고·분석·수정하고 <strong class="text-txt-primary">고객에게 발행</strong>하는 경로를 먼저. 매출·관계 표면(포트허브)이 1차에 들어갑니다.</p>
+          <p><strong class="text-txt-primary">Phase 2 = 관측 레이어.</strong> 운용 대시보드·배치 재실행·변경이력 뷰어는 나중.</p>
+          <p class="pt-2 border-t border-bdr-subtle"><strong class="text-aed-emerald">단, 감사 데이터는 day 1부터.</strong> 모든 변경은 <span class="font-mono text-[12px] text-txt-primary">alpha_status_transition</span>에 기록 — 뷰어(P2)는 나중이어도 진실은 처음부터 쌓습니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WALKTHROUGH ============ -->
+<section class="py-32">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="mb-12 rv"><p class="label mb-4">화면</p><h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">판단이 화면이 된 자리</h2></div>
+
+    <!-- catalog strip -->
+    <div class="grid md:grid-cols-2 gap-6 mb-16 rv">
+      <div class="shot"><img src="/images/alpha-storage/single-catalog.png" alt="단일전략 카탈로그" loading="lazy" /><p class="shot-cap">단일전략 카탈로그 — 451개를 상태·배치·태그·작성자로 탐색</p></div>
+      <div class="shot"><img src="/images/alpha-storage/composite-catalog.png" alt="합성전략 카탈로그" loading="lazy" /><p class="shot-cap">합성전략 카탈로그 — 운용중 4 / 포워드 5</p></div>
+    </div>
+
+    <!-- interactive detail explorer -->
+    <div class="rv rounded-[20px] bg-surface-card p-6 md:p-8" style="box-shadow:0 12px 40px rgba(0,0,0,0.12);">
+      <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+        <div>
+          <p class="text-[11px] font-bold uppercase tracking-wider text-txt-muted mb-1">전략 상세 · 인터랙티브</p>
+          <p class="font-display font-bold text-2xl" id="deTitle">단일전략 상세 · 탭 3</p>
+        </div>
+        <div class="inline-flex rounded-lg border border-bdr-subtle bg-surface-subtle p-1" id="deSeg">
+          <button data-kind="single" class="de-seg px-4 py-2 rounded-md text-sm font-medium transition">단일전략</button>
+          <button data-kind="composite" class="de-seg px-4 py-2 rounded-md text-sm font-medium transition">합성전략</button>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 mb-5" id="deTabs"></div>
+      <div class="shot" style="border-radius:12px;"><img id="deImg" src="/images/alpha-storage/single-detail-perf.png" alt="전략 상세" /></div>
+      <p class="text-[13.5px] text-txt-secondary leading-relaxed mt-4" id="deDesc"></p>
+    </div>
+    <p class="text-center text-[12px] text-txt-muted mt-4 rv">단일은 3탭(성과·보유종목·변경이력), 합성은 4탭(+<span class="text-aed-violet font-medium">구성</span>) — 세그먼트와 탭을 눌러 비교해보세요.</p>
+  </div>
+</section>
+
+<!-- ============ 기획 → 제품 (구현) ============ -->
+<section class="py-32 bg-surface-subtle">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="max-w-3xl mb-14 rv">
+      <p class="label mb-4">기획 → 제품</p>
+      <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">화면이 먼저,<br/>API가 화면을 따라왔습니다</h2>
+      <p class="mt-6 text-txt-secondary text-lg leading-relaxed">
+        팀은 <strong class="text-txt-primary">두 명</strong> — 데이터·백엔드 담당 한 명, 기획·프론트를 맡은 저 한 명.
+        백엔드 담당이 데이터개발팀이라 백엔드에 쓸 여력이 적었고, 그래서 <strong class="text-txt-primary">화면이 스펙을 이끄는 구조</strong>였습니다.
+        제가 화면을 먼저 설계하면, 그 화면에 맞춰 API가 만들어졌습니다.
+      </p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-5 mb-12">
+      <div class="rv rounded-[16px] p-6 bg-surface-card"><h4 class="font-bold mb-2">화면이 계약을 이끌다</h4><p class="text-[14px] text-txt-secondary leading-relaxed">기획 화면이 곧 API 스펙의 출발점. 필요한 데이터·상태를 화면에서 먼저 정의하면 백엔드가 그에 맞춰 엔드포인트를 짰습니다.</p></div>
+      <div class="rv rv-d1 rounded-[16px] p-6 bg-surface-card"><h4 class="font-bold mb-2">디자인 → 코드 → 연동</h4><p class="text-[14px] text-txt-secondary leading-relaxed">Figma를 픽셀로 옮겨 직접 React·Vite로 구현하고, 나온 API(<span class="font-mono text-[12px] text-txt-primary">&#123;result,data&#125;</span> 봉투·아이디 로그인·<span class="font-mono text-[12px] text-txt-primary">/me</span> 분리)에 맞춰 배선. 매핑은 한 곳에 격리.</p></div>
+      <div class="rv rv-d2 rounded-[16px] p-6 bg-surface-card"><h4 class="font-bold mb-2">죽지 않는 화면</h4><p class="text-[14px] text-txt-secondary leading-relaxed">작은 팀이라 백엔드가 늘 준비돼 있지 않았습니다. 요청 타임아웃·스켈레톤·에러+재시도에 mock 폴백까지 넣어, 백엔드 없이도 화면이 돕니다.</p></div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="rv shot"><img src="/images/alpha-storage/app-login.png" alt="구현된 로그인" loading="lazy" /><p class="shot-cap">구현 · 로그인 스플릿 (React · Vite)</p></div>
+      <div class="rv rv-d1 shot"><img src="/images/alpha-storage/app-catalog.png" alt="구현된 카탈로그" loading="lazy" /><p class="shot-cap">구현 · 단일전략 카탈로그 (실 API + mock 폴백)</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IMPACT ============ -->
+<section class="py-32">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="mb-16 rv"><p class="label mb-4">결과</p><h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">전략 자산에 원장이 생겼습니다</h2></div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-16 gap-x-8">
+      <div class="rv text-center lg:text-left"><p class="giant text-6xl md:text-8xl text-txt-primary"><span class="count-up" data-target="17">0</span></p><p class="mt-3 text-sm text-txt-muted font-medium">설계 화면</p><p class="mt-1 text-[13px] text-txt-secondary leading-relaxed">인증부터 발행·계정관리까지 IA·상태모델 설계</p></div>
+      <div class="rv rv-d1 text-center lg:text-left"><p class="giant text-6xl md:text-8xl text-aed-emerald"><span class="count-up" data-target="451">0</span></p><p class="mt-3 text-sm text-txt-muted font-medium">단일 전략</p><p class="mt-1 text-[13px] text-txt-secondary leading-relaxed">2,824개 알파 소스에서 큐레이션된 원장</p></div>
+      <div class="rv rv-d2 text-center lg:text-left"><p class="giant text-6xl md:text-8xl text-txt-primary"><span class="count-up" data-target="3">0</span></p><p class="mt-3 text-sm text-txt-muted font-medium">독립 상태 축</p><p class="mt-1 text-[13px] text-txt-secondary leading-relaxed">운영 × 배치 × 공개 — 하나로 안 뭉갠 모델</p></div>
+      <div class="rv rv-d3 text-center lg:text-left"><p class="giant text-6xl md:text-8xl text-aed-emerald">IP</p><p class="mt-3 text-sm text-txt-muted font-medium">발행 경계</p><p class="mt-1 text-[13px] text-txt-secondary leading-relaxed">성과는 공개, 알파는 비공개 — 신뢰를 팔되 IP는 보호</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEARNINGS ============ -->
+<section class="py-32 bg-surface-subtle">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="text-center mb-20 rv"><p class="label mb-4">배운 것</p><h2 class="font-display text-4xl md:text-6xl font-bold tracking-tight">운용을 아는 기획자가<br/>설계하면</h2></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="rv bg-surface-card rounded-[16px] p-8 transition-all duration-700 hover:-translate-y-2"><h4 class="font-display font-bold text-xl mb-3">상태는 합치면 거짓말이 된다</h4><p class="text-txt-secondary text-[15px] leading-relaxed">운영·배치·공개를 한 필드로 합쳤다면 "live인데 실패"를 표현할 수 없었습니다. 도메인을 알아야 축을 나눌 수 있습니다.</p></div>
+      <div class="rv rv-d1 bg-surface-card rounded-[16px] p-8 transition-all duration-700 hover:-translate-y-2"><h4 class="font-display font-bold text-xl mb-3">진실은 처음부터, 뷰어는 나중에</h4><p class="text-txt-secondary text-[15px] leading-relaxed">감사 이력 UI는 Phase 2로 미뤄도, 기록 자체는 day 1부터 쌓게 했습니다. 데이터 모델의 불변식과 화면의 우선순위는 다릅니다.</p></div>
+      <div class="rv rv-d2 bg-surface-card rounded-[16px] p-8 transition-all duration-700 hover:-translate-y-2"><h4 class="font-display font-bold text-xl mb-3">발행은 제품 포지셔닝이다</h4><p class="text-txt-secondary text-[15px] leading-relaxed">무엇을 공개하고 감출지는 UI가 아니라 사업 판단입니다. 검증된 성과는 팔고 알파는 지키는 경계를 화면으로 그렸습니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<section class="py-32" style="background:#0e0e0e;">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12 text-center rv">
+    <p style="color:#8A8B8E; font-size:14px; letter-spacing:0.2em; text-transform:uppercase; font-weight:600; margin-bottom:32px;">Live Demo</p>
+    <p class="font-display text-3xl md:text-4xl font-bold text-white mb-8 leading-relaxed">직접 눌러볼 수 있습니다<br/>아무 아이디·비밀번호로 로그인</p>
+    <a href="#" class="inline-block rounded-full bg-white text-black px-8 py-3.5 text-sm font-semibold">데모 열기 →</a>
+    <p class="mt-6 text-white/30 text-[13px]">mock 모드라 백엔드 없이 로그인부터 카탈로그까지 동작합니다</p>
+    <div class="border-t border-white/10 pt-10 mt-16">
+      <p style="color:#8A8B8E; font-size:14px; letter-spacing:0.2em; text-transform:uppercase; font-weight:600; margin-bottom:16px;">Get in Touch</p>
+      <div class="flex items-center justify-center gap-6 flex-wrap">
+        <a href="mailto:elliebinn@gmail.com" class="text-white/60 hover:text-white transition-colors text-sm font-medium">elliebinn@gmail.com</a>
+        <span class="text-white/20 hidden md:inline">|</span>
+        <a href="https://github.com/Elliebinn" class="text-white/60 hover:text-white transition-colors text-sm font-medium">GitHub</a>
+      </div>
+      <p class="mt-8 text-white/25 text-[13px]">React · Vite · TypeScript · MobX · Tailwind · Figma · Claude Code</p>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const csNav = document.getElementById('csNav');
+  window.addEventListener('scroll', () => { if (window.scrollY > 60) csNav.classList.add('scrolled'); else csNav.classList.remove('scrolled'); }, { passive:true });
+  const obs = new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); }, { threshold:0.08, rootMargin:'0px 0px -40px 0px' });
+  document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+  const countObs = new IntersectionObserver((es)=>{ es.forEach(en=>{ if(en.isIntersecting && !en.target.dataset.counted){ en.target.dataset.counted='1'; const t=parseInt(en.target.dataset.target); const dur=1400, start=performance.now(); const step=(now)=>{ const p=Math.min((now-start)/dur,1); const e=1-Math.pow(1-p,3); en.target.textContent=Math.floor(e*t); if(p<1) requestAnimationFrame(step); else en.target.textContent=t; }; requestAnimationFrame(step); } }); }, { threshold:0.3 });
+  document.querySelectorAll('.count-up').forEach(el=>countObs.observe(el));
+  const themeBtn = document.getElementById('csThemeBtn');
+  themeBtn.addEventListener('click', ()=>{ const h=document.documentElement; const dark=h.getAttribute('data-theme')==='dark'; h.setAttribute('data-theme', dark?'light':'dark'); themeBtn.textContent = dark?'◐ Light':'◐ Dark'; });
+
+  // scroll progress bar
+  const prog = document.getElementById('prog');
+  window.addEventListener('scroll', ()=>{ const h=document.documentElement; const max=h.scrollHeight-h.clientHeight; prog.style.width = max>0 ? (h.scrollTop/max*100)+'%' : '0%'; }, {passive:true});
+
+  // interactive detail explorer
+  const DE = {
+    single: { title:'단일전략 상세 · 탭 3', tabs:[
+      {t:'성과', img:'single-detail-perf.png', d:'IS/OS 구간 분리 + 12개 KPI. 누적수익·낙폭·월별·연도별 차트로 과적합 여부를 한 화면에서 판단합니다.'},
+      {t:'보유종목', img:'single-holdings.png', d:'리밸 회차·기준일 두 축으로 스냅샷 탐색. target 대비 현재 보유의 괴리(pp)를 막대·눈금으로 표시합니다.'},
+      {t:'변경 이력', p2:true, img:'single-history.png', d:'상태 전이와 필드별 before/after를 시간순으로. 사람 입력(좌측 선)과 시스템 자동 기록을 구분합니다.'},
+    ]},
+    composite: { title:'합성전략 상세 · 탭 4', tabs:[
+      {t:'성과', img:'composite-detail-perf.png', d:'단일과 달리 IS/OS/LIVE 세그먼트 + LIVE 누적 차트, 복리/단리 토글까지. 실제 운영 성과를 증명합니다.'},
+      {t:'구성', star:true, img:'composite-composition.png', d:'레그·비중·resid-IR 테이블 + 구성 변천 차트. 각 레그는 자기 단일전략 상세로 이동. 합성전략의 존재 이유입니다.'},
+      {t:'보유종목', img:'composite-holdings.png', d:'15종목 집중 북. 레그 교체(구성 변경)가 보유 변화의 원인임을 화면에서 연결합니다.'},
+      {t:'변경 이력', p2:true, img:'composite-history.png', d:'상태·정보 변경에 더해 공개·구성변경 이벤트까지. 구성 변경은 자동 버전(v1→v2→v3)으로 기록됩니다.'},
+    ]},
+  };
+  let deKind='single';
+  const deTitle=document.getElementById('deTitle'), deTabs=document.getElementById('deTabs'), deImg=document.getElementById('deImg'), deDesc=document.getElementById('deDesc');
+  function deLabel(tab){ return tab.t + (tab.star?' <span style="color:#8688e1">★</span>':'') + (tab.p2?' <span style="opacity:.5;font-size:10px;font-weight:700">P2</span>':''); }
+  function deRender(idx){
+    const set=DE[deKind]; deTitle.textContent=set.title; deTabs.innerHTML='';
+    set.tabs.forEach((tab,i)=>{
+      const b=document.createElement('button');
+      b.className='de-tab'+(i===idx?' active':''); b.innerHTML=deLabel(tab);
+      b.onclick=()=>{ deImg.style.opacity='0'; setTimeout(()=>{ deImg.src='/images/alpha-storage/'+tab.img; deImg.style.opacity='1'; },150); deDesc.textContent=tab.d; deTabs.querySelectorAll('.de-tab').forEach((x,j)=>x.classList.toggle('active',j===i)); };
+      deTabs.appendChild(b);
+    });
+    const t=set.tabs[idx]; deImg.src='/images/alpha-storage/'+t.img; deImg.style.opacity='1'; deDesc.textContent=t.d;
+  }
+  document.querySelectorAll('.de-seg').forEach(s=>s.addEventListener('click',()=>{ deKind=s.dataset.kind; document.querySelectorAll('.de-seg').forEach(x=>x.classList.toggle('active',x===s)); deRender(0); }));
+  document.querySelector('.de-seg[data-kind="single"]').classList.add('active');
+  deRender(0);
+</script>
+
+</V2Layout>
