@@ -20,6 +20,17 @@ const projectsData: Record<Lang, ProjectItem[]> = {
   ko: [
     {
       number: '01',
+      category: '서비스 기획 · 화면 설계 · 프론트',
+      title: 'Alpha Storage — 전략 저장·운영·발행',
+      desc: '단일전략을 합성전략으로 조합하고 고객에게 발행하는 전략 자산 원장. 17개 화면의 정보구조와 3축 상태 모델을 설계하고 프론트까지 구현했어요.',
+      tags: ['FinTech', 'IA · 상태 모델', 'Design → Code'],
+      year: '2026',
+      img: 'images/alpha-storage/composite-composition.png',
+      href: '/ko/work/alpha-storage/',
+      cta: '케이스 스터디 보기',
+    },
+    {
+      number: '02',
       category: '서비스 기획 · IA',
       title: '퀀트 전략 분석 플랫폼',
       desc: '리서처 4명이 매일 쓰는 도구. 200개+ 전략의 정보구조를 재설계하고, 20개+ 페이지를 직접 설계했어요.',
@@ -30,7 +41,7 @@ const projectsData: Record<Lang, ProjectItem[]> = {
       cta: '케이스 스터디 보기',
     },
     {
-      number: '02',
+      number: '03',
       category: 'AI 설계 · 기획 · 개발',
       title: '주주톡: AI 주식 분석',
       desc: '6개 AI 에이전트가 병렬 분석하고, 4명의 투자 페르소나가 토론하는 구조를 설계했어요. 혼자 기획부터 개발까지.',
@@ -41,7 +52,7 @@ const projectsData: Record<Lang, ProjectItem[]> = {
       cta: '케이스 스터디 보기',
     },
     {
-      number: '03',
+      number: '04',
       category: '알고리즘 운용 · 심사',
       title: 'RATB 로보어드바이저 운용',
       desc: '38개 AI 투자 알고리즘을 기획하고, 200개 계좌를 동시에 관리하는 프로세스를 설계했어요. 22~24차 전원 통과.',
@@ -52,7 +63,7 @@ const projectsData: Record<Lang, ProjectItem[]> = {
       cta: '관련 글 보기',
     },
     {
-      number: '04',
+      number: '05',
       category: '워크플로우 · 자동화',
       title: 'AI 운용지원 시스템',
       desc: '운용역 워크플로우를 관찰해서 자동화/판단 단계를 분리. 매매·운용시간을 83% 단축했어요.',

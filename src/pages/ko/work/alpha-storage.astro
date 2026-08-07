@@ -54,10 +54,14 @@ import V2Layout from '../../../layouts/V2Layout.astro';
   .cs-back-link { font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--t-muted); text-decoration:none; }
   .cs-back-link:hover { color:var(--t-primary); }
   @media (max-width:900px){ .cs-nav.scrolled{ left:5%; right:5%; } .cs-nav{ padding:16px 20px; } }
-  .shot { border-radius:16px; overflow:hidden; border:1px solid var(--b-subtle); background:var(--s-subtle); transition:transform .45s cubic-bezier(0.16,1,0.3,1), box-shadow .45s, border-color .45s; }
+  .shot { position:relative; padding-top:36px; border-radius:16px; overflow:hidden; border:1px solid var(--b-subtle); background:var(--s-subtle); transition:transform .45s cubic-bezier(0.16,1,0.3,1), box-shadow .45s, border-color .45s; }
   .shot img { width:100%; display:block; }
   .shot:hover { transform:translateY(-4px); box-shadow:0 18px 48px rgba(0,0,0,0.22); border-color:var(--b-card); }
   .shot-cap { font-size:11px; color:var(--t-muted); text-align:center; padding:12px; }
+  /* browser chrome — 캡처를 실제 웹처럼 보이게 */
+  .shot::before { content:''; position:absolute; top:0; left:0; right:0; height:36px; background:var(--s-elevated); border-bottom:1px solid var(--b-subtle); z-index:2; }
+  .shot::after { content:''; position:absolute; top:14px; left:16px; width:8px; height:8px; border-radius:50%; background:#ff5f57; box-shadow:14px 0 0 #febc2e, 28px 0 0 #28c840; z-index:3; }
+  .shot .addr { position:absolute; top:8px; left:64px; right:16px; height:20px; border-radius:6px; background:var(--s-subtle); border:1px solid var(--b-subtle); z-index:3; display:flex; align-items:center; padding:0 10px; font-size:10px; color:var(--t-muted); font-family:'IBM Plex Mono',monospace; overflow:hidden; white-space:nowrap; }
   .progress { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,#4B6878,#8BA4B4); z-index:9999; transition:width .08s linear; }
   .de-seg { color:var(--t-muted); background:transparent; border:none; cursor:pointer; }
   .de-seg.active { background:var(--s-card); color:var(--t-primary); box-shadow:0 1px 3px rgba(0,0,0,0.15); }
@@ -447,6 +451,9 @@ import V2Layout from '../../../layouts/V2Layout.astro';
 </section>
 
 <script is:inline>
+  // 각 스크린샷에 브라우저 주소바 주입 (웹처럼 보이게)
+  document.querySelectorAll('.shot').forEach(s=>{ if(s.querySelector('.addr')) return; const a=document.createElement('div'); a.className='addr'; a.textContent='alpha-storage.alphabridge.co.kr'; s.prepend(a); });
+
   const csNav = document.getElementById('csNav');
   window.addEventListener('scroll', () => { if (window.scrollY > 60) csNav.classList.add('scrolled'); else csNav.classList.remove('scrolled'); }, { passive:true });
   const obs = new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); }); }, { threshold:0.08, rootMargin:'0px 0px -40px 0px' });
