@@ -39,8 +39,14 @@ import V2Layout from '../../../layouts/V2Layout.astro';
     --nav-pill-bg:rgba(240,237,229,0.8);
   }
   html, body { max-width:100vw; overflow-x:hidden; }
-  body { -webkit-font-smoothing:antialiased; word-break:keep-all; background:var(--s-page); color:var(--t-primary); transition:background .3s,color .3s; cursor:auto !important; }
-  a, button, .de-tab, .de-seg, .cs-theme-btn, [data-cursor] { cursor:pointer !important; }
+  body { -webkit-font-smoothing:antialiased; word-break:keep-all; background:var(--s-page); color:var(--t-primary); transition:background .3s,color .3s; cursor:none; }
+  /* 커스텀 크로스헤어 커서 (다른 케이스 페이지와 통일) */
+  .cursor { position:fixed; top:0; left:0; pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+  .cursor-dot { width:8px; height:8px; border-radius:50%; background:#fff; transform:translate(-50%,-50%); transition:transform .2s cubic-bezier(0.16,1,0.3,1); }
+  .cursor-ring { position:absolute; top:0; left:0; width:32px; height:32px; border-radius:50%; border:1px solid rgba(255,255,255,0.5); transform:translate(-50%,-50%); transition:width .3s, height .3s, border-color .3s; }
+  .cursor.hover .cursor-ring { width:48px; height:48px; border-color:rgba(255,255,255,0.85); }
+  .cursor.hover .cursor-dot { transform:translate(-50%,-50%) scale(2); }
+  @media (hover:none){ body{cursor:auto;} .cursor{display:none;} }
   .font-display { font-family:'Space Grotesk','Pretendard',sans-serif; }
   .font-mono { font-family:'IBM Plex Mono',ui-monospace,monospace; }
   .label { font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#8BA4B4; }
@@ -83,11 +89,12 @@ import V2Layout from '../../../layouts/V2Layout.astro';
 </style>
 
 <div class="progress" id="prog"></div>
+<div class="cursor" id="cursor"><div class="cursor-dot"></div><div class="cursor-ring"></div></div>
 
 <nav class="cs-nav" id="csNav">
-  <a href="#" class="cs-nav-brand">Hyebin.</a>
+  <a href="/ko/" class="cs-nav-brand">Hyebin.</a>
   <div style="display:flex; align-items:center; gap:24px;">
-    <a href="#" class="cs-back-link">Back Home</a>
+    <a href="/ko/" class="cs-back-link">Back Home</a>
     <button class="cs-theme-btn" id="csThemeBtn">◐ Dark</button>
   </div>
 </nav>
@@ -449,6 +456,19 @@ import V2Layout from '../../../layouts/V2Layout.astro';
 </section>
 
 <script is:inline>
+  // 커스텀 크로스헤어 커서 (다른 케이스 페이지와 통일)
+  (function(){
+    const cursor=document.getElementById('cursor');
+    if(!cursor || !window.matchMedia('(hover:hover)').matches) return;
+    let mx=innerWidth/2,my=innerHeight/2,cx=mx,cy=my;
+    addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY},{passive:true});
+    (function loop(){cx+=(mx-cx)*0.2;cy+=(my-cy)*0.2;cursor.style.transform='translate('+cx+'px,'+cy+'px)';requestAnimationFrame(loop);})();
+    document.querySelectorAll('a,button,.de-tab,.de-seg,[data-cursor]').forEach(el=>{
+      el.addEventListener('mouseenter',()=>cursor.classList.add('hover'));
+      el.addEventListener('mouseleave',()=>cursor.classList.remove('hover'));
+    });
+  })();
+
   // 각 스크린샷에 브라우저 주소바 주입 (웹처럼 보이게)
   document.querySelectorAll('.shot').forEach(s=>{ if(s.querySelector('.addr')) return; const a=document.createElement('div'); a.className='addr'; a.textContent='alpha-storage.alphabridge.co.kr'; s.prepend(a); });
 
