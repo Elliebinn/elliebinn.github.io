@@ -60,6 +60,10 @@ export type ResumeEducation = {
 export type ResumeCertification = {
   name: string;
   date: string;
+  /** 발급 전체 일자 (cv.md 상세 표기용). 사이트는 date를 사용 */
+  issuedOn?: string;
+  /** 발급 기관 (cv.md 상세 표기용) */
+  issuer?: string;
 };
 
 export type ResumeSkillRow = {
@@ -231,12 +235,12 @@ export const resume: ResumeData = {
     },
   ],
   certifications: [
-    { name: 'SQL 개발자 (SQLD)', date: '2026.03' },
-    { name: '증권투자권유자문인력', date: '2024.05' },
-    { name: '파생상품투자권유자문인력', date: '2024.02' },
-    { name: '펀드투자권유자문인력', date: '2023.12' },
-    { name: 'AFPK', date: '2022.04' },
-    { name: '투자자산운용사', date: '2021.12' },
+    { name: 'SQL 개발자 (SQLD)', date: '2026.03', issuedOn: '2026.03.27', issuer: '한국데이터산업진흥원' },
+    { name: '증권투자권유자문인력', date: '2024.05', issuedOn: '2024.05.09', issuer: '한국금융투자협회' },
+    { name: '파생상품투자권유자문인력', date: '2024.02', issuedOn: '2024.02.15', issuer: '한국금융투자협회' },
+    { name: '펀드투자권유자문인력', date: '2023.12', issuedOn: '2023.12.21', issuer: '한국금융투자협회' },
+    { name: 'AFPK', date: '2022.04', issuedOn: '2022.04.08', issuer: '한국FPSB' },
+    { name: '투자자산운용사', date: '2021.12', issuedOn: '2021.12.09', issuer: '한국금융투자협회' },
   ],
   skills: [
     {

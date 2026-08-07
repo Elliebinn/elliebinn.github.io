@@ -100,7 +100,8 @@ function renderMarkdown(): string {
   parts.push('## Certifications');
   parts.push('');
   for (const cert of resume.certifications) {
-    parts.push(`- ${cert.name} · ${cert.date}`);
+    const detail = [cert.issuedOn ?? cert.date, cert.issuer].filter(Boolean).join(' · ');
+    parts.push(`- ${cert.name} · ${detail}`);
   }
   parts.push('');
   parts.push('---');
