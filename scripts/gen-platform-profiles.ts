@@ -71,6 +71,16 @@ function renderProfile(profile: typeof resume.remember): string {
   out.push(profile.skills.join(', '));
   out.push('');
 
+  // 자격증은 플랫폼별로 따로 쓰지 않고 resume.certifications 하나만 본다.
+  // 채널마다 취득일이 어긋나는 일을 막기 위한 것이므로 여기서 분기하지 않는다.
+  out.push('## 자격증');
+  out.push('');
+  for (const c of resume.certifications) {
+    const tail = [c.issuedOn ?? c.date, c.issuer].filter(Boolean).join(' · ');
+    out.push(`- ${c.name} · ${tail}`);
+  }
+  out.push('');
+
   out.push('## 링크');
   out.push('');
   for (const l of profile.links) out.push(`- ${l}`);
