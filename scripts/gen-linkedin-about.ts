@@ -46,6 +46,25 @@ function renderKoSection(): string {
   lines.push('✦ 링크');
   lines.push(`• Portfolio: ${resume.contact.portfolio}`);
   lines.push(`• GitHub: ${resume.contact.github}`);
+
+  // Experience 설명란. About과 붙여넣는 칸이 다르므로 H2로 갈라 둔다.
+  for (const career of resume.linkedin.careers) {
+    lines.push('');
+    lines.push(`## 경력 — ${career.company}`);
+    lines.push('');
+    lines.push(career.meta);
+    lines.push('');
+    if (career.lead) {
+      lines.push(stripBold(career.lead));
+      lines.push('');
+    }
+    for (const block of career.blocks) {
+      lines.push(`[${block.title}] ${block.period}`);
+      for (const b of block.bullets) lines.push(`• ${stripBold(b)}`);
+      lines.push('');
+    }
+  }
+
   lines.push(END_MARKER);
   return lines.join('\n');
 }
