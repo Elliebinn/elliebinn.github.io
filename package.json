@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "sync:resume": "node --experimental-strip-types scripts/gen-resume-md.ts && node --experimental-strip-types scripts/gen-linkedin-about.ts",
+    "sync:resume": "node --experimental-strip-types scripts/gen-resume-md.ts && node --experimental-strip-types scripts/gen-linkedin-about.ts && node --experimental-strip-types scripts/gen-platform-profiles.ts",
     "sync:career-statement": "node --experimental-strip-types scripts/gen-career-statement-md.ts",
     "sync:all": "npm run sync:resume && npm run sync:career-statement",
     "resume:audit": "bash scripts/resume-audit.sh",
