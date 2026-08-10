@@ -75,7 +75,7 @@ export const resumeGeneric: ResumeData = {
     {
       company: '에셋플러스자산운용',
       department: 'AI자산운용팀',
-      org: '정규직 (2023.09 - 2025.03 알파브릿지 파견 겸직)',
+      org: '정규직 (2023.11 - 2025.03 알파브릿지 겸임·상주)',
       period: '2023.09 - 2025.03',
       projects: [
         {

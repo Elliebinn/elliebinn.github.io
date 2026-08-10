@@ -244,7 +244,7 @@ export const landingTargets: Record<string, LandingTarget> = {
           company: '에셋플러스자산운용',
           team: 'AI자산운용팀',
           period: '2023.09 – 2025.03',
-          employment: '정규직 (2024.12 - 2025.03 알파브릿지 파견 겸직)',
+          employment: '정규직 (2023.11 - 2025.03 알파브릿지 겸임·상주)',
           subtitle: 'AI 공모펀드 기획·출시 · 로보어드바이저 운용심사 PM',
           sections: [
             {

@@ -88,7 +88,7 @@ export const careerStatement: CareerStatementData = {
       company: "에셋플러스자산운용",
       department: "AI자산운용팀",
       period: "2023.09 - 2025.03",
-      role: "AI 운용 기획자 (정규직, 2023.09~2025.03 알파브릿지 파견 겸직)",
+      role: "AI 운용 기획자 (정규직, 2023.11~2025.03 알파브릿지 겸임·상주)",
       projects: [
         {
           title: "로보어드바이저 AI 알고리즘 기획 및 운용심사 (RATB 22~24차)",
