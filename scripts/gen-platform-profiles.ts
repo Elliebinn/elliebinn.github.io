@@ -62,7 +62,17 @@ function renderProfile(profile: typeof resume.remember): string {
   for (const extra of profile.extraSections ?? []) {
     out.push(`## ${extra.label}`);
     out.push('');
-    for (const b of extra.bullets) out.push(`- ${stripBold(b)}`);
+    for (const b of extra.bullets) {
+      const text = stripBold(b);
+      // 항목당 상한이 있는 섹션(원티드 AI 활용 경험 = 50자)은 초과분을 바로 알린다.
+      if (extra.maxPerBullet && [...text].length > extra.maxPerBullet) {
+        console.error(
+          `  ✗ [${extra.label}] ${[...text].length}자 (상한 ${extra.maxPerBullet}자 초과): ${text}`,
+        );
+        process.exitCode = 1;
+      }
+      out.push(`- ${text}`);
+    }
     out.push('');
   }
 
