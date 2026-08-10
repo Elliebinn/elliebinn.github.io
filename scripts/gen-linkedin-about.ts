@@ -63,6 +63,10 @@ function renderKoSection(): string {
       for (const b of block.bullets) lines.push(`• ${stripBold(b)}`);
       lines.push('');
     }
+    if (career.skills?.length) {
+      lines.push(`보유기술: ${career.skills.join(', ')}`);
+      lines.push('');
+    }
   }
 
   lines.push(END_MARKER);

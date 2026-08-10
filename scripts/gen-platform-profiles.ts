@@ -12,7 +12,7 @@
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { resume, stripBold } from '../src/data/resume.ts';
+import { resume, stripBold, educationKo } from '../src/data/resume.ts';
 
 const CAREER_PLANNER = '/Users/ellie/Projects/career-planner';
 
@@ -79,6 +79,14 @@ function renderProfile(profile: typeof resume.remember): string {
   out.push('## 스킬');
   out.push('');
   out.push(profile.skills.join(', '));
+  out.push('');
+
+  // 학력·자격증은 플랫폼별로 따로 쓰지 않고 공유 데이터 하나만 본다.
+  out.push('## 학력');
+  out.push('');
+  for (const e of educationKo) {
+    out.push(`- ${e.name} · ${e.degree} · ${e.period}`);
+  }
   out.push('');
 
   // 자격증은 플랫폼별로 따로 쓰지 않고 resume.certifications 하나만 본다.

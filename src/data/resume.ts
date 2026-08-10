@@ -132,6 +132,8 @@ type PlatformProfile = {
       period: string;
       bullets: string[];
     }[];
+    /** LinkedIn Experience의 '보유기술' 태그 */
+    skills?: string[];
   }[];
   /** 원티드 "AI 활용 경험"처럼 플랫폼 고유 섹션 */
   extraSections?: {
@@ -143,6 +145,20 @@ type PlatformProfile = {
   skills: string[];
   links: string[];
 };
+
+/** 리멤버·원티드 학력칸용 한글 표기. 사실은 resume.education과 동일하다 */
+export const educationKo = [
+  {
+    name: 'Johns Hopkins University',
+    degree: '학사 · 경제학과 (부전공: 마케팅학과)',
+    period: '2017.08 - 2019.05 · 졸업',
+  },
+  {
+    name: 'Fullerton College',
+    degree: '경제학과',
+    period: '2016.01 - 2017.05 · 졸업',
+  },
+];
 
 // ─── Data ───────────────────────────────────────────────────────────────
 
@@ -299,7 +315,7 @@ export const resume: ResumeData = {
   ],
   language: {
     primary: '한국어 (모국어) · 영어 (비즈니스 고급)',
-    note: '미국 대학 졸업 (Johns Hopkins University)',
+    note: '미국 대학 졸업 (Johns Hopkins University) · OPIc IH (2025.08.31)',
   },
   linkedin: {
     headline: '[💼 금융을 알고, AI로 직접 만드는 기획자]',
@@ -328,6 +344,22 @@ export const resume: ResumeData = {
         company: '알파브릿지',
         meta: '기획자 · 정규직 | 2025년 4월 – 현재',
         lead: 'AI 투자 전략을 제품으로 만드는 일을 합니다. 프론트엔드 개발자가 없는 팀에서 화면 설계부터 AI 코딩 도구를 이용한 구현·검증까지 직접 책임집니다.',
+        skills: [
+          '서비스 기획',
+          '프로덕트 매니지먼트',
+          '정보구조(IA) 설계',
+          '제품 경계·범위 정의',
+          'UX 설계',
+          '요건정의서 · PRD',
+          '데이터 모델링',
+          'AI 에이전트 설계',
+          '프로토타입 구현(React)',
+          '핀테크',
+          '로보어드바이저',
+          'SQL',
+          'Python',
+          '프로젝트 관리',
+        ],
         blocks: [
           {
             title: 'AI 투자 전략 자산화 시스템 기획',
@@ -363,6 +395,18 @@ export const resume: ResumeData = {
         company: '에셋플러스자산운용',
         meta: '사원 · 정규직 | 2023년 9월 – 2025년 3월',
         lead: 'AI 공모펀드의 일일 운용을 직접 수행하면서, 운용 현장의 병목을 시스템 기획으로 옮기는 일을 했습니다. 입사 2개월 뒤인 2023년 11월부터 퇴사 시점까지 자회사 알파브릿지에 겸임·상주 근무했습니다.',
+        skills: [
+          '상품기획',
+          '금융 AI 규제 대응',
+          '포트폴리오 운용',
+          '컴플라이언스',
+          '코스콤 RATB 심사',
+          'ETF · 공모펀드',
+          '요건정의서',
+          '프로세스 설계',
+          '데이터 분석',
+          '프로젝트 관리',
+        ],
         blocks: [
           {
             title: '로보어드바이저 AI 알고리즘 기획 및 운용심사 (RATB 22~24차)',
@@ -512,7 +556,7 @@ export const resume: ResumeData = {
     careers: [
       {
         company: '알파브릿지주식회사',
-        meta: '정규직 | 서비스 기획 | 2025.04 ~ 재직 중',
+        meta: '정규직 | 직무: 서비스기획 | 직책: 사원 | 포트폴리오본부 | 2025.04 ~ 재직 중',
         blocks: [
           {
             title: 'AI 투자 전략 자산화 시스템 기획',
@@ -547,7 +591,7 @@ export const resume: ResumeData = {
       },
       {
         company: '에셋플러스자산운용(주)',
-        meta: '정규직 | AI자산운용팀 | 2023.09 ~ 2025.03 (2023.11~ 알파브릿지 겸임·상주)',
+        meta: '정규직 | 직무: 서비스기획 | 직책: 사원 | 2023.09 ~ 2025.03 (2023.11~ 알파브릿지 겸임·상주)',
         blocks: [
           {
             title: '로보어드바이저 AI 알고리즘 기획 및 운용심사 (RATB 22~24차)',
