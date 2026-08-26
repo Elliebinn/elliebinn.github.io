@@ -156,7 +156,7 @@ export const educationKo = [
   {
     name: 'Fullerton College',
     degree: '경제학과',
-    period: '2016.01 - 2017.05 · 졸업',
+    period: '2016.02 - 2017.05 · 졸업',
   },
 ];
 
@@ -288,7 +288,7 @@ export const resume: ResumeData = {
     {
       name: 'Fullerton College',
       degree: 'Economics',
-      period: '2016.01 - 2017.05',
+      period: '2016.02 - 2017.05',
     },
   ],
   certifications: [
